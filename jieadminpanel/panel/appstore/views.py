@@ -152,6 +152,7 @@ class AppDetailView(AppStoreMixin, DetailView):
             {'title': '组件详情', 'href': '', 'active': True},
 
         ]
+        print(settings.INSTALL_DIR)
         return context
 
 
@@ -161,10 +162,23 @@ class AppInstallView(AppStoreMixin, FormView):
 
     def form_valid(self, form):
         app_info = AppsInfo.objects.get(pk=self.kwargs['pk'])
-        file_path = settings.BASE_DIR.parent / 'install' / f'{app_info.name_en}.zip'
+        download_url = app_info.download_url
+
+        file_path = settings.INSTALL_DIR / f'{app_info.name_en}.zip'
+
+        if download_url:
+            exec_str = f'cd {settings.INSTALL_DIR} && wget -O {app_info.name_en}.zip {download_url}'
+            result = subprocess_run(subprocess, exec_str)
+            print(result)
+
+        print(file_path)
 
         if file_path.exists():
             exec_zip = f'unzip -o {file_path} -d {settings.BASE_DIR}/apps/'
+            result = subprocess_run(subprocess, exec_zip)
+            print(result)
+
+            exec_zip = f'mv {settings.BASE_DIR}/apps/{app_info.name_en}-main {settings.BASE_DIR}/apps/{app_info.name_en}'
             result = subprocess_run(subprocess, exec_zip)
             print(result)
 
