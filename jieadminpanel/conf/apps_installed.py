@@ -1,0 +1,1 @@
+APPS_INSTALLED_LIST = []

@@ -1,0 +1,21 @@
+{% extends 'layout_panel.html' %}
+{% load appcommon_html %}
+
+{% block pagecontent %}
+    {% include 'include_messages.html' %}
+<div class="card">
+<form name="form" id="form" method="post" class="layui-form mt-2">{% csrf_token %}
+    <div class="card-body">
+    <div class="layui-form-item">
+        <label class="layui-form-label text-right">{{ form.hostname.label  }}</label>
+        <div class="layui-input-block">{{ form.hostname }}
+            {% if form.hostname.errors %}<span class="layui-font-red">{{ form.hostname.errors }}</span>{% endif %}
+        </div>
+    </div>
+    </div>
+    <div class="card-footer">
+        {% form_btn 'submit' %}{% form_btn 'reset' %}
+    </div>
+ </form>
+</div>
+{% endblock %}

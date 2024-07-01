@@ -1,0 +1,13 @@
+from django.urls import reverse
+
+menu = {
+    '': {
+        'child': [
+            {
+                'name': '',
+                'title': '',
+                'href': '',
+            },
+        ]
+    }
+}

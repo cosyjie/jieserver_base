@@ -1,0 +1,1 @@
+SET_CATEGORY = (('systemtools', '系统工具'), ('environments', '运行环境'), ('database', '数据库'))

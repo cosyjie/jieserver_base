@@ -1,0 +1,64 @@
+{% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block pagecontent %}
+<div class="card">
+        <div class="card-header p-2">
+<ul class="nav nav-pills">
+  <li class="nav-item">
+      <a class="nav-link{% if request.GET.type == 'all' %} active{% endif %}" href="{% url 'appstore:list' %}?type=all">全部</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link{% if request.GET.type == 'enabled' %} active{% endif %}" href="{% url 'appstore:list' %}?type=enabled" >已安装</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link{% if request.GET.type == 'disabled' %} active{% endif %}" href="{% url 'appstore:list' %}?type=disabled" >已禁用</a>
+  </li>
+
+  <li class="nav-item">
+      <a class="nav-link{% if request.GET.category == 'systemtools' %} active{% endif %}" href="{% url 'appstore:list' %}?category=systemtools">系统工具</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link{% if request.GET.category == 'environments' %} active{% endif %}" href="{% url 'appstore:list' %}?category=environments">运行环境</a>
+  </li>
+  <li class="nav-item">
+      <a class="nav-link{% if request.GET.category == 'database' %} active{% endif %}" href="{% url 'appstore:list' %}?category=database">数据存储</a>
+  </li>
+
+</ul>
+</div>
+<div class="card-body">
+<table class="table table-hover">
+    <thead class="thead-light">
+    <tr>
+        <th width="5"></th><th>名称</th><th>分类</th><th>类型</th><th>作者</th><th>版本</th><th>状态</th><th>描述</th>
+    </tr>
+    </thead>
+    <tbody>
+{% for object in object_list %}
+    <tr>
+        <td>
+            {% if object.icon %}
+            <img src="{% static 'appstore/app_ico/' %}{{ object.icon }}" width="25" height="25" />
+            {% endif %}
+        </td>
+        <td class="text-bold"><a href="{% url 'appstore:detail' object.pk %}">{{ object.name_cn }}</a></td>
+        <td>{{ object.get_category_display }}</td>
+        <td>{{ object.get_dev_type_display }}</td>
+        <td>{{ object.author }}</td>
+        <td>{{ object.version }}</td>
+        <td>
+            {% if object.status == 1 %}<span class="badge badge-danger">{{ object.get_status_display }}</span>{% endif %}
+            {% if object.status == 2  %}
+            <span class="badge badge-success">{{ object.get_status_display }}</span>
+            {% endif %}
+{% if object.status == 3 %}<span class="badge badge-warning">{{ object.get_status_display }}</span>{% endif %}
+        </td>
+        <td>{{ object.description }}</td>
+    </tr>
+{% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,158 @@
+{% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block js_code %}
+<script type="text/javascript">
+$(function(){
+    var fnsetdate = function(){
+        $.ajax({
+            type: 'GET',
+            url: '{% url 'panelhome:systemState' %}',
+            data: { time: new Date().getTime() },
+            success: function(data){
+                $('#current_time').text(data['current_time']);
+                $('#cpu_loadavg').text(data['cpu_loadavg']);
+                $('#mem').text(data['mem']);
+                $('#swap').text(data['swap']);
+                $('#swap_percent').attr('style', 'width:' + data['swap_percent'] + '%');
+                $('#os_getloadavg').text(data['os_getloadavg']);
+                $('#cpu_percent').attr("style", "width:" +　data['cpu_percent'] +"%");
+                $('#cpu_percent_show').text(data['cpu_percent']+ '%');
+                $('#mem_percent').attr("style", "width:" + data['mem_percent'] + '%');
+                $('#sysdisk').text(data['sysdisk']);
+                $('#sysdisk_percent').attr('style', 'width:' + data['sysdisk_percent'] + '%');
+                $('#homedisk').text(data['homedisk']);
+                $('#homedisk_percent').attr('style', 'width:' + data['homedisk_percent'] + '%');
+                $('#rootdisk').text(data['rootdisk']);
+                $('#rootdisk_percent').attr('style', 'width:' + data['rootdisk_percent'] + '%');
+                {#$('#net_io_str').html(data['net_io_str']);#}
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                console.log(textStatus + ', ' + errorThrown);
+            }
+        });
+    }
+
+    var interval = setInterval(fnsetdate, 3000);
+
+})
+</script>
+{% endblock %}
+
+{% block pagecontent %}
+
+<div class="row">
+    <div class="col-12 col-sm-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>CPU使用率</h5>
+            </div>
+            <div class="card-body">
+<div class="row">
+    <div class="text-bold col-md-8">{{ cpu_count }} cpu</div>
+    <div class="col-md-4 text-right" id="cpu_percent_show">{{ cpu_percent }}%</div>
+</div>
+ <div class="progress"  role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="height: 10px">
+    <div class="progress-bar" id="cpu_percent" style="width: {{ cpu_percent }}%;"></div>
+ </div>
+<div class='row mt-1'>
+    <table>
+         <tr>
+            <td class="text-bold" style="width:50px;">负载</td>
+             <td id="os_getloadavg">{{ os_getloadavg }}</td>
+        </tr>
+    </table>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>内存使用率</h5>
+            </div>
+            <div class="card-body">
+<div class="row">
+    <div class="text-bold col-md-2">RAM</div>
+    <div class="col-md-10 text-right" id="mem"></div>
+</div>
+ <div class="progress"  role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="height: 10px">
+    <div class="progress-bar" id="mem_percent"></div>
+ </div>
+
+<div class="row mt-1">
+    <div class="text-bold col-md-3">swap</div>
+    <div class="col-md-9 text-right" id="swap"></div>
+</div>
+ <div class="progress"  role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="height: 10px">
+    <div class="progress-bar" id="cpu_percent" style="width: {{ swap_percent }}%"></div>
+ </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>磁盘使用率</h5>
+            </div>
+            <div class="card-body">
+<div class="row">
+    <div class="text-bold col-md-2">/</div>
+    <div class="col-md-10 text-right" id="sysdisk"></div>
+</div>
+ <div class="progress"  role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="height: 10px">
+    <div class="progress-bar" id="sysdisk_percent"></div>
+ </div>
+<div class="row mt-2">
+    <div class="text-bold col-md-3">/home</div>
+    <div class="col-md-9 text-right" id="homedisk"></div>
+</div>
+ <div class="progress"  role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="height: 10px">
+    <div class="progress-bar" id="homedisk_percent"></div>
+ </div>
+<div class="row mt-2">
+    <div class="text-bold col-md-3">/root</div>
+    <div class="col-md-9 text-right" id="rootdisk"></div>
+</div>
+ <div class="progress"  role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="height: 10px">
+    <div class="progress-bar" id="rootdisk_percent"></div>
+ </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="card">
+    <div class="card-body">
+    <table class="table no-border table-sm">
+        <tr>
+            <td class="text-bold">主机名</td>
+            <td><a href="{% url 'panelhome:hostname' %}"><span>{{ hostname }}</span></a></td>
+            <td class="text-bold">操作系统</td><td><span>{{ os }}</span></td>
+        </tr>
+        <tr>
+            <td class="text-bold">系统时间</td>
+            <td><a href="{% url 'panelhome:timezone' %}"><span id="current_time">{{ current_time }}</span> </a>
+            </td>
+            <td class="text-bold">内核架构</td><td>{{ platform }}</td>
+        </tr>
+        <tr>
+            <td class="text-bold">CPU</td><td id="cpu">{{ cpu }}</td>
+            <td class="text-bold"></td><td></td>
+        </tr>
+        <tr>
+            <td class="text-bold">jiesysadmin版本</td>
+            <td>{{ version }}</td>
+            <td class="text-bold"></td><td></td>
+        </tr>
+    </table>
+    </div>
+</div>
+</div>
+{% endblock %}

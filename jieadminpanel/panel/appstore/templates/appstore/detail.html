@@ -1,0 +1,62 @@
+{% extends 'layout_panel.html' %}
+{% load static %}
+
+{% block pagecontent %}
+<div class="card">
+    <div class="card-header">
+    <div class="card-title">
+        {% if object.status == 1 %}
+<form method="post" action="{% url 'appstore:install' object.pk %}">{% csrf_token %}
+<button type="submit"  class="btn btn-outline-success">安装</button>
+</form>
+        {% endif %}
+        {% if object.status == 2 %}
+<form method="post" action="{% url 'appstore:disabled' object.pk %}">{% csrf_token %}
+    <button type="submit"  class="btn btn-outline-warning">禁用</button>
+</form>
+        {% endif %}
+        {% if object.status == 3  %}
+<form method="post" action="{% url 'appstore:restore' object.pk %}">{% csrf_token %}
+<button type="submit" class="btn btn-outline-warning">恢复</button>
+</form>
+        {% endif %}
+    </div>
+    <div class="card-tools">
+        {% if object.status == 3 %}
+<a href="{% url 'appstore:delete' object.pk %}" id="install"  class="btn btn-outline-danger">删除</a>
+        {% endif %}
+
+    </div>
+    </div>
+    <div class="card-body">
+<dl class="row">
+    <dt class="col-sm-2">组件名称</dt>
+    <dd class="col-sm-10 text-bold text-lg">
+        {% if object.icon %}
+           <img src="{% static 'appstore/app_ico/'|add:object.icon %}" width="25" height="25" />
+        {% endif %}
+        {{ object.name_cn }}
+    </dd>
+
+    <dt class="col-sm-2">作者</dt>
+    <dd class="col-sm-10">{{ object.author }}</dd>
+
+    <dt class="col-sm-2">所属分类</dt>
+    <dd class="col-sm-10">{{ object.get_category_display }}</dd>
+
+    <dt class="col-sm-2">类型</dt>
+    <dd class="col-sm-10">{{ object.get_dev_type_display }}</dd>
+
+    <dt class="col-sm-2">版本</dt>
+    <dd class="col-sm-10">{{ object.version }}</dd>
+
+    <dt class="col-sm-2">状态</dt>
+    <dd class="col-sm-10">{{ object.get_status_display }}</dd>
+
+    <dt class="col-sm-2">描述</dt>
+    <dd class="col-sm-10">{{ object.description }}</dd>
+
+</dl>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'systemauth/layout_registration.html' %}
+{% block page_title %}登录{% endblock %}
+
+{% block pagecontent %}
+<form class="layui-form" id="form" method="post">{% csrf_token %}
+  <div class="demo-login-container">
+    <div class="form-title">密码登录</div>
+
+{% if form.non_field_errors %}
+<div class="layui-font-red layui-font-16">{{form.non_field_errors }}</div>
+{% elif next and not request.user.is_authenticated%}
+<div class="layui-font-red layui-font-16">
+    您还未登录或者您的登录超时！若要继续，请使用具有访问权限的帐户登录。
+</div>
+{% endif %}
+
+    <div class="layui-form-item mt_20">
+      <div class="layui-input-wrap">
+        <div class="layui-input-prefix">
+          <i class="layui-icon layui-icon-username"></i>
+        </div>
+          {{ form.username }}
+{% if form.username.errors %}<span class="layui-font-red">{{ form.username.errors }}</span>{% endif %}
+      </div>
+    </div>
+
+    <div class="layui-form-item mt_20">
+      <div class="layui-input-wrap">
+        <div class="layui-input-prefix">
+          <i class="layui-icon layui-icon-password"></i>
+        </div>
+<input type="password" name="password" id="id_password" value="" lay-verify="required" placeholder="密   码"
+       lay-reqtext="请填写密码" autocomplete="off" class="layui-input" lay-affix="eye">
+      </div>
+{% if form.password.errors %}<span class="layui-font-red">{{ form.password.errors }}</span>{% endif %}
+    </div>
+
+    <div class="layui-form-item" style="margin-top: 30px;">
+      <button class="layui-btn layui-btn-fluid layui-bg-blue" lay-submit lay-filter="demo-login">登录</button>
+    </div>
+
+
+  </div>
+</form>
+
+{% endblock pagecontent %}

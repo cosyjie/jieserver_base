@@ -1,0 +1,27 @@
+.message-box-warning{
+    background-color: #FFFFCC;
+    border:1px solid #ffc107;
+    border-left: 5px solid #ffc107;
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: .25rem;
+    font-size:1rem;
+    font-weight: bold;
+}
+.message-box-warning p{
+    margin-bottom: 0;
+}
+.layui-form-label{
+    padding: 9px;
+    width: 100px;
+}
+
+
+.tab-content .tab-custom-content{
+    border-top: none;
+    border-bottom: 1px solid #dee2e6;
+    margin-top: 0;
+    margin-bottom: .5rem;
+    padding-bottom: .5rem;
+}

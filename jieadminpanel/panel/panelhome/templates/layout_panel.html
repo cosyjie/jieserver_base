@@ -1,0 +1,26 @@
+{% extends 'layout_admin.html' %}
+{% load static %}
+{% load panelhome_helper %}
+
+{% block user-panel %}
+    <div class="image"><img src="{% static 'img/server-small.png' %}" /></div>
+    <div class="info">
+        <a class="d-block">{% get_hostname %}</a>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+<li class="nav-item">
+    <a href="{% url 'panelhome:index' %}" class="nav-link{% if parent_menu == 'home' %} active{% endif %}">
+      <i class="nav-icon fas fa-tachometer-alt"></i>
+      <p>概览</p>
+    </a>
+</li>
+{% main_sidebar parent_menu menu %}
+<li class="nav-item">
+    <a href="{% url 'appstore:list' %}?type=all" class="nav-link{% if parent_menu == 'appstore' %} active{% endif %}">
+      <i class="nav-icon fas fa-th-large"></i>
+      <p>组件商店</p>
+    </a>
+</li>
+{% endblock %}

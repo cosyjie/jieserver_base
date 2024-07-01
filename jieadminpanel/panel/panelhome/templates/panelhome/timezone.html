@@ -1,0 +1,82 @@
+{% extends 'layout_panel.html' %}
+{% load appcommon_html %}
+
+{% block js_code %}
+<script type="text/javascript">
+layui.use(function() {
+    var laydate = layui.laydate;
+    var form = layui.form;
+    $ = layui.$;
+
+    laydate.render({
+        elem: '#id_set_date',
+        type: 'datetime',
+        fullPanel: true,
+        isInitValue: true,
+        value:'{{ time }}',
+    });
+
+  form.on('radio(radio-filter)', function(data){
+    var elem = data.elem;
+    var checked = elem.checked;
+    var value = elem.value;
+      if (value==1){
+          $('#show_set_date').hide();
+      }else{
+          $('#show_set_date').show();
+      }
+  });
+
+})
+
+</script>
+{% endblock  %}
+
+{% block pagecontent %}
+
+{% include 'include_messages.html' %}
+
+<div class="layui-card">
+    <div class="layui-card-body">
+
+<form id="form" name="form" method="post" class="layui-form" >
+    {% csrf_token %}
+<div class="layui-form-item">
+    <label class="layui-form-label">时区</label>
+    <div class="layui-input-block">
+      <select id="id_zone" name="zone" lay-verify="required" lay-search>
+{% for zone in zone_list %}
+  <option value="{{ zone }}"{% if zone in current_zone %} selected{% endif %}>{{ zone }}</option>
+{% endfor %}
+      </select>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">同步模式</label>
+    <div class="layui-input-block">
+<input type="radio" id="id_time_sync_1" name="time_sync" lay-filter="radio-filter" value="1" {% if time_sync == 'active' %} checked{% endif %}
+       onclick="document.getElementById('show_set_date').style.display='none';" title="自动网络同步">
+<input type="radio" id="id_time_sync_2" name="time_sync" lay-filter="radio-filter" value="2" {% if time_sync == 'inactive' %} checked{% endif %}
+        onclick="document.getElementById('show_set_date').style.display='';" title="手动修改">
+    </div>
+</div>
+
+<div class="layui-form-item" id="show_set_date" {% if time_sync == 'active' %}style="display: none;"{% endif %}>
+  <label class="layui-form-label" style="width:120px;">设置日期时间</label>
+  <div class="layui-input-inline">
+    <input type="text" class="layui-input" id="id_set_date" lay-verify="required" lay-reqtext='请选择日期时间，并保证格式正确！'
+           name="set_date" placeholder="yyyy-MM-dd HH:mm:ss">
+  </div>
+</div>
+
+<div class="layui-form-item">
+<div class="layui-input-block">
+  {% form_btn 'submit' 'reset' %}
+</div>
+</div>
+
+</form>
+    </div>
+</div>
+{% endblock %}
