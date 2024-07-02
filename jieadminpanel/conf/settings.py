@@ -2,8 +2,7 @@ import os
 from pathlib import Path
 from .style import *
 from .secreykey import *
-from .apps_list import APPS_LIST
-from .apps_installed import APPS_INSTALLED_LIST
+from .apps_list import APPS_LIST, APPS_INSTALLED_LIST
 from .additionals import *
 from .encryptionkey import *
 
