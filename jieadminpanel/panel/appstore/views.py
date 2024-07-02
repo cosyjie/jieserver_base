@@ -25,6 +25,7 @@ class AppStoreMixin(ContextMixin):
         context['parent_menu'] = 'appstore'
         return context
 
+
 class AppStoreListView(AppStoreMixin, ListView):
     template_name = 'appstore/list.html'
 
@@ -74,8 +75,6 @@ class AppInstallView(AppStoreMixin, FormView):
             exec_str = f'cd {settings.INSTALL_DIR} && wget -O {app_info.name_en}.zip {download_url}'
             result = subprocess_run(subprocess, exec_str)
             print(result)
-
-        print(file_path)
 
         if file_path.exists():
             exec_zip = f'unzip -o {file_path} -d {settings.BASE_DIR}/apps/'
@@ -201,6 +200,7 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
             subprocess,
             f'{settings.PYENV_DEFAULT_PYTHON_RUN} {settings.BASE_DIR}/manage.py migrate {app_info.name_en} zero',
         )
+        print(result)
 
         ContentType.objects.filter(app_label=app_info.name_en).delete()
 
