@@ -52,7 +52,8 @@ def generate_password(length=16, has_uppercase=True, has_lowercase=True, has_dig
             .replace("(", "").replace(")", "").replace("^", "")
             .replace(">", "").replace("<", "").replace(";", "")
             .replace("@",'').replace("`", "").replace("|", "")
-            .replace("~", "").replace(":", "")
+            .replace("~", "").replace(":", "").replace("{", "")
+            .replace("}", "").replace("[", "").replace("]", "")
 
         )  # 包含了大多数特殊字符，但你可能需要移除某些不想要的字符
 
