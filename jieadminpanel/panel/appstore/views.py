@@ -81,9 +81,7 @@ class AppDetailView(AppStoreMixin, DetailView):
 
 class AppInstallView(AppStoreMixin, FormView):
     form_class = FormBase
-
-    def get_success_url(self):
-        return reverse('appstore:list') + '?type=all'
+    success_url = settings.LOGIN_REDIRECT_URL
 
     def form_valid(self, form):
         app_info = AppsInfo.objects.get(pk=self.kwargs['pk'])
@@ -123,6 +121,12 @@ class AppInstallView(AppStoreMixin, FormView):
                     settings.APPS_LIST.append(app_info.name_en)
 
                 rewrite_apps_list_file()
+
+                print('开始迁移')
+                result = subprocess_run(subprocess,
+                    f'{settings.PYENV_DEFAULT_PYTHON_RUN} {settings.BASE_DIR}/manage.py migrate'
+                )
+                print(result)
 
                 # print('执行安装')
                 # module_views = importlib.import_module(f'apps.{app_info.name_en}.install')
@@ -174,6 +178,7 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
     model = AppsInfo
     form_class = DeleteConfirmForm
     template_name = 'appstore/confirm_uninstall.html'
+    success_url = settings.LOGIN_REDIRECT_URL
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -185,9 +190,6 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
             {'title': '卸载组件', 'href': '', 'active': True},
         ]
         return context
-
-    def get_success_url(self):
-        return reverse('appstore:list') + '?type=all'
 
     def form_valid(self, form):
         import shutil
