@@ -81,7 +81,9 @@ class AppDetailView(AppStoreMixin, DetailView):
 
 class AppInstallView(AppStoreMixin, FormView):
     form_class = FormBase
-    success_url = settings.LOGIN_REDIRECT_URL
+
+    def get_success_url(self):
+        return reverse('appstore:list') + '?type=all'
 
     def form_valid(self, form):
         app_info = AppsInfo.objects.get(pk=self.kwargs['pk'])
@@ -111,30 +113,16 @@ class AppInstallView(AppStoreMixin, FormView):
             if result.returncode == 0:
                 print('加入应用激活。。')
 
+                if app_info.name_en in settings.INSTALLED_APPS:
+                    settings.INSTALLED_APPS.append(f'apps.{app_info.name_en}')
+
                 if app_info.name_en not in settings.APPS_INSTALLED_LIST:
                     settings.APPS_INSTALLED_LIST.append(app_info.name_en)
 
                 if app_info.name_en not in settings.APPS_LIST:
                     settings.APPS_LIST.append(app_info.name_en)
 
-                if len(settings.APPS_INSTALLED_LIST):
-                    list_str = '","'.join(settings.APPS_INSTALLED_LIST)
-                    w_content = f'APPS_INSTALLED_LIST=["{list_str}"]\n'
-                else:
-                    w_content = 'APPS_INSTALLED_LIST=[]\n'
-                if len(settings.APPS_LIST):
-                    list_str = '","'.join(settings.APPS_LIST)
-                    w_content += f'APPS_LIST=["{list_str}"]'
-                else:
-                    w_content += f'APPS_LIST=[]'
-
-                with open(Path.joinpath(settings.BASE_DIR, 'conf', 'apps_list.py'), 'w', encoding='utf-8') as f:
-                    f.write(w_content)
-
-                print('开始迁移')
-                result = subprocess_run(subprocess,
-                    f'{settings.PYENV_DEFAULT_PYTHON_RUN} {settings.BASE_DIR}/manage.py migrate'
-                )
+                rewrite_apps_list_file()
 
                 # print('执行安装')
                 # module_views = importlib.import_module(f'apps.{app_info.name_en}.install')
@@ -143,9 +131,6 @@ class AppInstallView(AppStoreMixin, FormView):
                 print('修改状态')
                 app_info.status = 2
                 app_info.save()
-
-                print(result)
-
         else:
             messages.warning(self.request, '没有找到安装文件！请下载后放置在 /opt/jieserver/install 目录中! ')
             self.success_url = reverse_lazy('appstore:detail', kwargs={'pk': app_info.pk})
@@ -189,7 +174,6 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
     model = AppsInfo
     form_class = DeleteConfirmForm
     template_name = 'appstore/confirm_uninstall.html'
-    success_url = settings.LOGIN_REDIRECT_URL
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -201,6 +185,9 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
             {'title': '卸载组件', 'href': '', 'active': True},
         ]
         return context
+
+    def get_success_url(self):
+        return reverse('appstore:list') + '?type=all'
 
     def form_valid(self, form):
         import shutil
@@ -236,10 +223,6 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
         # )
         shutil.rmtree(f'{settings.BASE_DIR}/apps/{app_info.name_en}')
 
-        # 更新数据库状态
-        app_info.status = 1
-        app_info.save()
-
         if app_info.name_en in settings.INSTALLED_APPS:
             settings.INSTALLED_APPS.remove(f'apps.{app_info.name_en}')
 
@@ -250,4 +233,9 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
             settings.APPS_INSTALLED_LIST.remove(app_info.name_en)
 
         rewrite_apps_list_file()
+
+        # 更新数据库状态
+        app_info.status = 1
+        app_info.save()
+
         return super().form_valid(form)
