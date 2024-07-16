@@ -36,6 +36,7 @@ def rewrite_apps_list_file():
     with open(Path.joinpath(settings.BASE_DIR, 'conf', 'apps_list.py'), 'w', encoding='utf-8') as f:
         f.write(w_content)
 
+
 class AppStoreMixin(ContextMixin):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
