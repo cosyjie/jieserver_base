@@ -6,7 +6,7 @@ After=network.target
 User=root
 Group=root
 WorkingDirectory=/opt/jieserver/jieadminpanel/
-ExecStart=/opt/jieserver/pyenv/versions/jieadminpanel3119/bin/gunicorn -b 0.0.0.0:8000 --env DJANGO_SETTINGS_MODULE=conf.settings --chdir  '/opt/jieserver/jieadminpanel/' --reload -n 'JieAdminPanelServer' -t 1800 conf.wsgi
+ExecStart=/opt/jieserver/pyenv/versions/jieadminpanel3119/bin/gunicorn -b 0.0.0.0:8000 --env DJANGO_SETTINGS_MODULE=conf.settings --chdir  '/opt/jieserver/jieadminpanel/' --reload -n 'JieAdminServer' -t 1800 conf.wsgi
 Restart=always
 
 [Install]
