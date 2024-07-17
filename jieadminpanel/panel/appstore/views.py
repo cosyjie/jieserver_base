@@ -20,21 +20,26 @@ from .models import AppsInfo
 from .forms import DeleteConfirmForm
 
 
-def rewrite_apps_list_file():
-    if len(settings.APPS_INSTALLED_LIST):
-        list_str = '","'.join(settings.APPS_INSTALLED_LIST)
-        w_content = f'APPS_INSTALLED_LIST=["{list_str}"]\n'
-    else:
-        w_content = 'APPS_INSTALLED_LIST=[]\n'
+def rewrite_apps_list_file(type, content_list):
+    if type == 'installed':
+        if len(content_list):
+            list_str = '","'.join(content_list)
+            w_content = f'APPS_INSTALLED_LIST=["{list_str}"]\n'
+        else:
+            w_content = 'APPS_INSTALLED_LIST=[]\n'
 
-    if len(settings.APPS_LIST):
-        list_str = '","'.join(settings.APPS_LIST)
-        w_content += f'APPS_LIST=["{list_str}"]'
-    else:
-        w_content += f'APPS_LIST=[]'
+        with open(Path.joinpath(settings.APP_FILES, 'conf', 'apps_installed.py'), 'w', encoding='utf-8') as f:
+            f.write(w_content)
 
-    with open(Path.joinpath(settings.BASE_DIR, 'conf', 'apps_list.py'), 'w', encoding='utf-8') as f:
-        f.write(w_content)
+    if type == 'enabled':
+        if len(content_list):
+            list_str = '","'.join(content_list)
+            w_content = f'APPS_LIST=["{list_str}"]'
+        else:
+            w_content = f'APPS_LIST=[]'
+
+        with open(Path.joinpath(settings.APP_FILES, 'conf', 'apps_enabled.py'), 'w', encoding='utf-8') as f:
+            f.write(w_content)
 
 
 class AppStoreMixin(ContextMixin):
@@ -83,6 +88,9 @@ class AppInstallView(AppStoreMixin, FormView):
     success_url = settings.LOGIN_REDIRECT_URL
 
     def form_valid(self, form):
+        from app_files.conf.apps_enabled import APPS_LIST
+        from app_files.conf.apps_installed import APPS_INSTALLED_LIST
+
         app_info = AppsInfo.objects.get(pk=self.kwargs['pk'])
         download_url = app_info.download_url
 
@@ -113,13 +121,14 @@ class AppInstallView(AppStoreMixin, FormView):
                 if app_info.name_en in settings.INSTALLED_APPS:
                     settings.INSTALLED_APPS.append(f'apps.{app_info.name_en}')
 
-                if app_info.name_en not in settings.APPS_INSTALLED_LIST:
-                    settings.APPS_INSTALLED_LIST.append(app_info.name_en)
+                if app_info.name_en not in APPS_INSTALLED_LIST:
+                    APPS_INSTALLED_LIST.append(app_info.name_en)
 
-                if app_info.name_en not in settings.APPS_LIST:
-                    settings.APPS_LIST.append(app_info.name_en)
+                if app_info.name_en not in APPS_LIST:
+                    APPS_LIST.append(app_info.name_en)
 
-                rewrite_apps_list_file()
+                rewrite_apps_list_file('installed', APPS_INSTALLED_LIST)
+                rewrite_apps_list_file('enabled', APPS_LIST)
 
                 print('开始迁移')
                 result = subprocess_run(subprocess,
@@ -145,11 +154,13 @@ class AppDisabledView(AppStoreMixin, FormView):
     success_url = settings.LOGIN_REDIRECT_URL
 
     def form_valid(self, form):
+        from app_files.conf.apps_enabled import APPS_LIST
+
         app_info = AppsInfo.objects.get(pk=self.kwargs['pk'])
 
-        if app_info.name_en in settings.APPS_LIST:
-            settings.APPS_LIST.remove(app_info.name_en)
-            rewrite_apps_list_file()
+        if app_info.name_en in APPS_LIST:
+            APPS_LIST.remove(app_info.name_en)
+            rewrite_apps_list_file('enabled', APPS_LIST)
 
         app_info.status = 3
         app_info.save()
@@ -162,10 +173,12 @@ class AppRestoreView(AppStoreMixin, FormView):
     success_url = settings.LOGIN_REDIRECT_URL
 
     def form_valid(self, form):
+        from app_files.conf.apps_enabled import APPS_LIST
+
         app_info = AppsInfo.objects.get(pk=self.kwargs['pk'])
-        if app_info.name_en not in settings.APPS_LIST:
-            settings.APPS_LIST.append(app_info.name_en)
-            rewrite_apps_list_file()
+        if app_info.name_en not in APPS_LIST:
+            APPS_LIST.append(app_info.name_en)
+            rewrite_apps_list_file('enabled', APPS_LIST)
 
         app_info.status = 2
         app_info.save()
@@ -193,6 +206,8 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
     def form_valid(self, form):
         import shutil
         from django.contrib.contenttypes.models import ContentType
+        from app_files.conf.apps_enabled import APPS_LIST
+        from app_files.conf.apps_installed import APPS_INSTALLED_LIST
 
         app_info = AppsInfo.objects.get(pk=self.kwargs['pk'])
 
@@ -227,13 +242,14 @@ class AppUninstallView(AppStoreMixin, DetailView, FormView):
         if app_info.name_en in settings.INSTALLED_APPS:
             settings.INSTALLED_APPS.remove(f'apps.{app_info.name_en}')
 
-        if app_info.name_en in settings.APPS_LIST:
-            settings.APPS_LIST.remove(app_info.name_en)
+        if app_info.name_en in APPS_LIST:
+            APPS_LIST.remove(app_info.name_en)
 
-        if app_info.name_en in settings.APPS_INSTALLED_LIST:
-            settings.APPS_INSTALLED_LIST.remove(app_info.name_en)
+        if app_info.name_en in APPS_INSTALLED_LIST:
+            APPS_INSTALLED_LIST.remove(app_info.name_en)
 
-        rewrite_apps_list_file()
+        rewrite_apps_list_file('installed', APPS_INSTALLED_LIST)
+        rewrite_apps_list_file('enabled', APPS_LIST)
 
         # 更新数据库状态
         app_info.status = 1

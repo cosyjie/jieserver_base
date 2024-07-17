@@ -7,8 +7,6 @@ from django.conf import settings
 from django import template
 from django.utils.html import mark_safe
 
-from app_files.conf.apps_enabled import APPS_LIST
-
 register = template.Library()
 
 
@@ -31,6 +29,8 @@ def user_menu(parent_menu, submenu):
 
 @register.simple_tag
 def main_sidebar(parent_menu, current_menu):
+    from app_files.conf.apps_enabled import APPS_LIST
+
     # 左侧主菜单
     menus = {}
     html = ''
