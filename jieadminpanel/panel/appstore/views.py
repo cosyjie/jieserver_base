@@ -75,7 +75,6 @@ class AppDetailView(AppStoreMixin, DetailView):
             {'title': '组件详情', 'href': '', 'active': True},
 
         ]
-        print(settings.INSTALL_DIR)
         return context
 
 

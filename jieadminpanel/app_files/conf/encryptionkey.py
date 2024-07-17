@@ -1,0 +1,1 @@
+ENCRYPT_KEY = b'MRUN7bsIvhVeI6gg0GG-a78tbHO-8-6Vb8iU4Hi0hpc='

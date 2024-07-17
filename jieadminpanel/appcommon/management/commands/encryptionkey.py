@@ -9,7 +9,7 @@ from django.conf import settings
 class Command(BaseCommand):
     def handle(self, *args, **options):
         make_key = Fernet.generate_key()
-        key_file_path = os.path.join(settings.BASE_DIR,  'conf',  'encryptionkey.py')
+        key_file_path = os.path.join(settings.APP_FILES,  'conf',  'encryptionkey.py')
 
         with open(key_file_path, 'w', encoding='utf-8') as f:
             f.write(f"ENCRYPT_KEY = {make_key}")

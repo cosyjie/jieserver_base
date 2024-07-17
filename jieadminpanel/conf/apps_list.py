@@ -1,2 +1,0 @@
-APPS_INSTALLED_LIST = []
-APPS_LIST = []

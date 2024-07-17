@@ -1,1 +1,0 @@
-ENCRYPT_KEY = b'QiCdY5923n0hZ6d15sUtKCzNlWpo-JCmfh9COpiIvts='

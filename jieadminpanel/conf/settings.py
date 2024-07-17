@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
-from .style import *
-from .secreykey import *
-from .apps_list import APPS_LIST, APPS_INSTALLED_LIST
+
+from app_files.conf.secretkey import *
+from app_files.conf.apps_installed import APPS_INSTALLED_LIST
+from app_files.conf.encryptionkey import *
+
 from .additionals import *
-from .encryptionkey import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

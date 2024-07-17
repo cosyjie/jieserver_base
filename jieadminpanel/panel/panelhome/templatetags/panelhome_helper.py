@@ -7,6 +7,8 @@ from django.conf import settings
 from django import template
 from django.utils.html import mark_safe
 
+from app_files.conf.apps_enabled import APPS_LIST
+
 register = template.Library()
 
 
@@ -43,7 +45,7 @@ def main_sidebar(parent_menu, current_menu):
                 if module_content['position'] == 'main_sidebar':
                     menus[module_name] = module_content
 
-    for app_name in settings.APPS_LIST:
+    for app_name in APPS_LIST:
         if os.path.exists(Path.joinpath(settings.APPS_ROOT, app_name, 'menu.py')):
             import_app = importlib.import_module(f'apps.{app_name}.menu')
             app_menu = import_app.menu
@@ -52,7 +54,7 @@ def main_sidebar(parent_menu, current_menu):
                     if v['position'] == 'main_sidebar':
                         menus[k] = v
 
-    for app_name in settings.APPS_LIST:
+    for app_name in APPS_LIST:
         if os.path.exists(Path.joinpath(settings.APPS_ROOT, app_name, 'menu.py')):
             import_app = importlib.import_module(f'apps.{app_name}.menu')
             app_menu = import_app.menu
